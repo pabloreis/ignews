@@ -1,6 +1,6 @@
 .headerContainer {
   border: 1px solid var(--grey-800);
-  height: 5rem;
+  height: var(--header);
 }
 
 .headerContent {
@@ -12,7 +12,7 @@
   padding: 2rem;
 
   nav {
-    height: 5rem;
+    height: var(--header);
     margin-left: 5rem;
 
     a {
