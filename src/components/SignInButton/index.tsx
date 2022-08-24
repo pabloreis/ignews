@@ -18,7 +18,7 @@ export function SignInButton() {
     >
       <FaGithub color={buttonColor} />
 
-      {isUserLoggedIn ? session?.user?.name : 'Sign in with Github'}
+      {session?.user?.name || 'Sign in with Github'}
 
       {isUserLoggedIn && <FiX color="#737380" className={styles.closeIcon} />}
     </button>
