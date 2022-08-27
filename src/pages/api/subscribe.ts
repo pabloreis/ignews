@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react';
 import { fauna } from '../../services/fauna';
 import { query as q } from 'faunadb';
 import { stripe } from '../../services/stripe';
+import { FaunaCollections, FaunaIndexes } from '../../models/FaunaModel';
 
 interface User {
   ref: { id: string };
@@ -16,7 +17,12 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
     const session = await getSession({ req: request });
 
     const user = await fauna.query<User>(
-      q.Get(q.Match(q.Index('user_by_email'), q.Casefold(session.user.email)))
+      q.Get(
+        q.Match(
+          q.Index(FaunaIndexes.UserByEmail),
+          q.Casefold(session.user?.email)
+        )
+      )
     );
 
     let customerId = user.data.stripe_customer_id;
@@ -27,7 +33,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
       });
 
       await fauna.query(
-        q.Update(q.Ref(q.Collection('users'), user.ref.id), {
+        q.Update(q.Ref(q.Collection(FaunaCollections.Users), user.ref.id), {
           data: {
             stripe_customer_id: stripeCustomer.id,
           },
