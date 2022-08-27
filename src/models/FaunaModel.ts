@@ -5,5 +5,5 @@ export enum FaunaCollections {
 
 export enum FaunaIndexes {
   UserByEmail = 'user_by_email',
-  UserByStripeCustomerId = 'user_by_stripe_custumer_id',
+  UserByStripeCustomerId = 'user_by_stripe_customer_id',
 }
