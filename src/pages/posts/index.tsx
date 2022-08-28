@@ -1,7 +1,36 @@
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
-import styles from './styles.module.scss';
+import Prismic from '@prismicio/client';
+import { RichText } from 'prismic-dom';
 
-export default function Posts() {
+import { getPrismicClient } from '../../services/prismic';
+import styles from './styles.module.scss';
+import {
+  PrismicPublicationCategories,
+  PrismicTypes,
+} from '../../models/PrismicModel';
+
+interface PostResponse {
+  uid: string;
+  data: {
+    title: string;
+    content: Array<Record<'type' | 'paragraph' | 'text', string>>;
+  };
+  last_publication_date: string;
+}
+
+type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  updatedAt: string;
+};
+
+interface PostsProps {
+  posts: Post[];
+}
+
+export default function Posts({ posts }: PostsProps) {
   return (
     <>
       <Head>
@@ -10,32 +39,52 @@ export default function Posts() {
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <a href="#">
-            <time>28 de agosto de 2022</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>
-              In this guide, you will learn how to create a Monorepo to manage
-              multiple packages with a shared build, test, and release process.
-            </p>
-          </a>
-          <a href="#">
-            <time>28 de agosto de 2022</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>
-              In this guide, you will learn how to create a Monorepo to manage
-              multiple packages with a shared build, test, and release process.
-            </p>
-          </a>
-          <a href="#">
-            <time>28 de agosto de 2022</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>
-              In this guide, you will learn how to create a Monorepo to manage
-              multiple packages with a shared build, test, and release process.
-            </p>
-          </a>
+          {posts.map(({ slug, title, excerpt, updatedAt }) => (
+            <a href="#" key={slug}>
+              <time>{updatedAt}</time>
+              <strong>{title}</strong>
+              <p>{excerpt}</p>
+            </a>
+          ))}
         </div>
       </main>
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const prismic = getPrismicClient();
+
+  const response = await prismic.query(
+    [Prismic.Predicates.at('document.type', PrismicTypes.Publication)],
+    {
+      fetch: [
+        PrismicPublicationCategories.Title,
+        PrismicPublicationCategories.Content,
+      ],
+      pageSize: 100,
+    }
+  );
+
+  const posts = (response.results as PostResponse[]).map((post) => ({
+    slug: post.uid,
+    title: RichText.asText(post.data.title),
+    excerpt:
+      post.data.content.find((content) => content.type === 'paragraph')?.text ??
+      '',
+    updatedAt: new Date(post.last_publication_date).toLocaleDateString(
+      'pt-BR',
+      {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      }
+    ),
+  }));
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};
