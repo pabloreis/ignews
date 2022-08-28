@@ -17,7 +17,7 @@ export function ActiveLink({
   const className = asPath === linkProps.href ? activeClassName : '';
 
   return (
-    <Link className={className} {...linkProps}>
+    <Link {...linkProps}>
       {cloneElement(children, {
         className,
       })}
