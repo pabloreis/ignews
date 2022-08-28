@@ -4,7 +4,7 @@
   height: calc(100vh - var(--header));
   justify-content: space-between;
   margin: 0 auto;
-  max-width: 1120px;
+  max-width: var(--container-max-width);
   padding: 0 2rem;
 }
 
