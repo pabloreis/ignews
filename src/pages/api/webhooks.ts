@@ -44,14 +44,25 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
     const { type } = event;
 
     if (relevantEvents.has(type as StripeEvents)) {
+      const customerSubscriptionEvent = async () => {
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await saveSubscription({
+          subscriptionId: subscription.id,
+          customerId: subscription.customer.toString(),
+        });
+      };
       const stripeEventsModel = {
+        [StripeEvents.CustomerSubscriptionUpdated]: customerSubscriptionEvent,
+        [StripeEvents.CustomerSubscriptionDeleted]: customerSubscriptionEvent,
         [StripeEvents.CheckSessionCompleted]: async () => {
           const checkoutSession = event.data.object as Stripe.Checkout.Session;
 
-          await saveSubscription(
-            checkoutSession.subscription.toString(),
-            checkoutSession.customer.toString()
-          );
+          await saveSubscription({
+            subscriptionId: checkoutSession.subscription.toString(),
+            customerId: checkoutSession.customer.toString(),
+            isCreateAction: true,
+          });
         },
         error: () => {
           throw new Error('Unhandled event');
