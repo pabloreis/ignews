@@ -1,0 +1,42 @@
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.post {
+  margin: 5rem auto 0;
+  max-width: 720px;
+
+  h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+  }
+
+  time {
+    color: var(--grey-300);
+    display: block;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+  }
+}
+
+.postContent {
+  color: var(--grey-100);
+  font-size: 1.125rem;
+  line-height: 2rem;
+  margin-top: 2rem;
+
+  p,
+  ul {
+    margin: 1.5rem 0;
+  }
+
+  ul {
+    padding-left: 1.5rem;
+
+    li {
+      margin: 0.5rem 0;
+    }
+  }
+}

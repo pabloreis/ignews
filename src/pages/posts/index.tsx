@@ -9,6 +9,7 @@ import {
   PrismicPublicationCategories,
   PrismicTypes,
 } from '../../models/PrismicModel';
+import Link from 'next/link';
 
 interface PostResponse {
   uid: string;
@@ -40,11 +41,13 @@ export default function Posts({ posts }: PostsProps) {
       <main className={styles.container}>
         <div className={styles.posts}>
           {posts.map(({ slug, title, excerpt, updatedAt }) => (
-            <a href="#" key={slug}>
-              <time>{updatedAt}</time>
-              <strong>{title}</strong>
-              <p>{excerpt}</p>
-            </a>
+            <Link href={`/posts/${slug}`} key={slug}>
+              <a>
+                <time>{updatedAt}</time>
+                <strong>{title}</strong>
+                <p>{excerpt}</p>
+              </a>
+            </Link>
           ))}
         </div>
       </main>
